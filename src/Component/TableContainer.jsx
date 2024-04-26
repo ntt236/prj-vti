@@ -1,6 +1,7 @@
 import React from "react";
+import moment from "moment";
 import { Button, Table } from "reactstrap";
-const TableContainer = ({ data }) => {
+const TableContainer = ({ data, handleDelete, handleEdit }) => {
   return (
     <div>
       <h1>Danh sách Account</h1>
@@ -27,12 +28,12 @@ const TableContainer = ({ data }) => {
               <td>{item.fullName}</td>
               <td>{item.department}</td>
               <td>{item.position}</td>
-              <td>{item.CretateDate}</td>
+              <td>{moment(item.createdDate).format("YYYY-MM-DD HH:mm:ss")}</td>
               <td>
-                <Button>Edit</Button>
+                <Button onClick={() => handleEdit(item)}>Edit</Button>
               </td>
               <td>
-                <Button>Delete</Button>
+                <Button onClick={() => handleDelete(item.id)}>Delete</Button>
               </td>
             </tr>
           ))}

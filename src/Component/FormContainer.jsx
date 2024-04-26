@@ -1,11 +1,12 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Button, Form, FormGroup, Input, Label } from "reactstrap";
 
-const FormContainer = ({ onSubmitData }) => {
+const FormContainer = ({ onSubmitData, onUpdateData, edit }) => {
   const [emailValue, setEmailValue] = useState("");
   const [userNameValue, setUserNameValue] = useState("");
   const [fullNameValue, setFullNameValue] = useState("");
   const [departmentValue, setDepartmentValue] = useState("");
+
   const [positionValue, setPositionValue] = useState("");
   const onEmailChange = (e) => {
     setEmailValue(e.target.value);
@@ -22,7 +23,28 @@ const FormContainer = ({ onSubmitData }) => {
   const onPositionChange = (e) => {
     setPositionValue(e.target.value);
   };
+
+  useEffect(() => {
+    if (edit) {
+      setEmailValue(edit.email);
+      setUserNameValue(edit.userName);
+      setFullNameValue(edit.fullName);
+      setDepartmentValue(edit.department);
+      setPositionValue(edit.position);
+    }
+  }, [edit]);
+
   const handleSubmit = (e) => {
+    e.preventDefault();
+    if (departmentValue === "") {
+      alert("Please select a department");
+      return;
+    }
+    if (positionValue === "") {
+      alert("Please select a position");
+      return;
+    }
+
     const object = {
       id: Math.random(),
       email: emailValue,
@@ -30,19 +52,44 @@ const FormContainer = ({ onSubmitData }) => {
       fullName: fullNameValue,
       department: departmentValue,
       position: positionValue,
+      createdDate: new Date(),
     };
-    console.log("🚀 ~ handleSubmit ~ object:", object);
     onSubmitData(object);
+  };
+  const onUpdate = (e) => {
+    e.preventDefault();
+    if (departmentValue === "") {
+      alert("Please select a department");
+      return;
+    }
+    if (positionValue === "") {
+      alert("Please select a position");
+      return;
+    }
+
+    const object = {
+      id: edit?.id,
+      email: emailValue,
+      userName: userNameValue,
+      fullName: fullNameValue,
+      department: departmentValue,
+      position: positionValue,
+      createdDate: new Date(),
+    };
+    onUpdateData(object);
   };
   const onResetData = (e) => {
     setEmailValue("");
     setUserNameValue("");
     setFullNameValue("");
+    setDepartmentValue("");
+    setPositionValue("");
   };
+
   return (
     <div>
       {" "}
-      <Form>
+      <Form onSubmit={edit ? onUpdate : handleSubmit}>
         <FormGroup>
           <Label for="exampleEmail">Email</Label>
           <Input
@@ -85,8 +132,9 @@ const FormContainer = ({ onSubmitData }) => {
             value={departmentValue}
             onChange={onDepartmentChange}
           >
-            <option value={"Bán Hàng"}>Bán Hàng</option>
-            <option value={"Giám đốc"}>Giám đốc</option>
+            <option value=""> Vui lòng chọn</option>
+            <option value="Bán hàng"> Bán Hàng</option>
+            <option value="Giám Đốc"> Giám đốc</option>
           </Input>
         </FormGroup>
 
@@ -99,13 +147,13 @@ const FormContainer = ({ onSubmitData }) => {
             value={positionValue}
             onChange={onPositionChange}
           >
-            <option value={"dev"}>Dev</option>
-            <option value={"test"}>Test</option>
-            <option>5</option>
+            <option value="">Vui lòng chọn</option>
+            <option>dev</option>
+            <option>Test</option>
           </Input>
         </FormGroup>
         <FormGroup>
-          <Button onClick={handleSubmit}>Create</Button>
+          <Button type="submit">{edit ? "Update" : "Create"}</Button>
           <Button onClick={onResetData}>Reset</Button>
         </FormGroup>
       </Form>
